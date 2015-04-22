@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+</head>
+
+<body>
+<h1>Welcome To DeshBoard</h1>
+<h3>Search Results</h3>
+{% raw %}
+<div data-ng-app="myapp" data-ng-init="name=1">
+<div ng-controller="MyController" > 
+	<p>Pin Code:<input type="text" ng-model="pincode"> 
+	  State:<input type="text" ng-model="statename"></p>
+	<p>District:<input type="text" ng-model="district"> 
+	  Locality:<input type="text" ng-model="locality"></p>
+	<p>Office Name:<input type="text" ng-model="officename"> 
+	  Circle Name:<input type="text" ng-model="circlename"></p>
+<!-- </br> -->
+</p><button ng-click="myData.doClick(item, $event)">Search</button></p>
+    <br/>
+     <!-- Data from server: {{myData.fromServer}} -->
+    </br>
+<!-- id={{myData.fromServer.id}} -->
+<table border='1px'>
+    <tr>
+        <th>Pin Code</th>
+        <th>State Name</th>
+	<th>Delivery Status</th>
+        <th>District Name</th>
+	<th>Region Name</th>
+        <th>Division Name</th>
+	<th>Circle Name</th>
+        <th>Office Name</th>
+	<th>Taluk</th>
+        <th>Office Type</th>
+        
+    </tr>
+    <tr ng-repeat="myData in myData.fromServer">
+        <td>{{myData.pincode}}</td>
+        <td>{{myData.statename}}</td>
+	<td>{{myData.Deliverystatus}}</td>
+	<td>{{myData.Districtname}}</td>
+	<td>{{myData.regionname}}</td>
+	<td>{{myData.divisionname}}</td>
+	<td>{{myData.circlename}}</td>
+	<td>{{myData.officename}}</td>
+	<td>{{myData.Taluk}}</td>
+	<td>{{myData.officeType}}</td>
+        
+    </tr>
+</table>
+  </div>
+
+  <script>
+    angular.module("myapp", [])
+        .controller("MyController", function($scope, $http) {
+            $scope.myData = {};
+            $scope.myData.doClick = function(item, event) {
+
+var request = $http({
+      			method: "post",
+                        url: "/getData",
+                        data: {
+                            pincode: $scope.pincode,
+    statename: $scope.statename,
+    district: $scope.district,
+    locality: $scope.locality,
+    officename: $scope.officename,
+    circlename: $scope.circlename,
+                        }
+                    });
+
+                request.success(function(data, status, headers, config) {
+                    $scope.myData.fromServer = data;
+                });
+                request.error(function(data, status, headers, config) {
+                    alert("AJAX failed!");
+                });
+            }
+
+
+        } );
+  </script>
+</div>
+{% endraw %}
+</body>
+</html>

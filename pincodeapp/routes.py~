@@ -1,0 +1,23 @@
+from flask import Flask, render_template, jsonify
+from flask import request 
+from new_suggesttry import auto_complete
+import datetime
+import json
+app = Flask(__name__)      
+ 
+@app.route('/')
+def home():
+  
+  return render_template('index.html')
+
+@app.route('/getData',methods=['GET','POST'])
+def getDataFromElastic():
+	print 'in function'
+	print request.data
+	values = json.loads(request.data)
+	key = values['name']
+	result=auto_complete(key)
+	return json.dumps(result) 
+
+if __name__ == '__main__':
+  app.run(port=3125,debug=True)

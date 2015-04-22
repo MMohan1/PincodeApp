@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+</head>
+
+<body>
+<h3>Search Jobs</h3>
+{% raw %}
+<div data-ng-app="myapp" data-ng-init="name=1">
+<div ng-controller="MyController" >
+    
+	<p><input type="text" ng-model="keys">
+<!-- </br> -->
+<button ng-click="myData.doClick(item, $event)">Search</button></p>
+    <br/>
+     <!-- Data from server: {{myData.fromServer}} -->
+    </br>
+<!-- id={{myData.fromServer.id}} -->
+<table border='1px'>
+    <tr>
+        <th>Id</th>
+        <th>Title</th>
+        
+    </tr>
+    <tr ng-repeat="myData in myData.fromServer">
+        <td>{{myData.job_id}}</td>
+        <td>{{myData.title}}</td>
+        
+    </tr>
+</table>
+  </div>
+
+  <script>
+    angular.module("myapp", [])
+        .controller("MyController", function($scope, $http) {
+            $scope.myData = {};
+            $scope.myData.doClick = function(item, event) {
+
+var request = $http({
+      			method: "post",
+                        url: "/getData",
+                        data: {
+                            name: $scope.keys
+                        }
+                    });
+
+                request.success(function(data, status, headers, config) {
+                    $scope.myData.fromServer = data;
+                });
+                request.error(function(data, status, headers, config) {
+                    alert("AJAX failed!");
+                });
+            }
+
+
+        } );
+  </script>
+</div>
+{% endraw %}
+</body>
+</html>
