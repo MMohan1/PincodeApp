@@ -1,13 +1,10 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template
 from flask import request
-from celery_mail import make_celery
-from controller import insertCsvtoMongo, sendResult, Addresult,updateresult,delResult,getIdResult
-import datetime
+from controller import sendResult, Addresult,updateresult,delResult,getIdResult
 import json
 app = Flask(__name__)
 import ujson
 from bson.objectid import ObjectId  
-import json
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -20,7 +17,6 @@ class JSONEncoder(json.JSONEncoder):
 
 @app.route('/')
 def home():
-    insertCsvtoMongo.delay()  # inserting csv file details to mongodb
     return render_template('index.html')
 
 
@@ -28,10 +24,8 @@ def home():
 def getDataFromMongo():
     print 'in function'
     values = json.loads(request.data)
-    record = sendResult.delay(values)
-    record.wait(timeout=None)
-    out_put = record.result
-    return ujson.dumps(out_put)
+    record = sendResult(values)
+    return ujson.dumps(record)
 
 @app.route('/addData', methods=['GET', 'POST'])
 def addDateRenderPage():
@@ -58,10 +52,8 @@ def add_entry():
 
 @app.route('/editData/<id>', methods=['GET', 'POST'])
 def editDateRenderPage(id):
-    values = {}
     error = ''
-    id = ObjectId(id)
-    result = getIdResult(id)
+    result = getIdResult(int(id))
     return render_template('edit_details.html',error=error,result=result)
 
 @app.route('/update', methods=['GET', 'POST'])
@@ -78,7 +70,6 @@ def update_entry():
             if not rec['pincode'].strip().isdigit():
                 error = "Please Fill Integer in PinCode Field"
                 return render_template('edit_details.html',error=error,result=rec)
-    rec['_id'] = ObjectId(rec['_id'])
     updateresult(rec)
     return render_template('index.html')
                 
@@ -87,7 +78,6 @@ def update_entry():
 def delDataFromMongo():
     print 'in function'
     values = json.loads(request.data)
-    values['_id'] = ObjectId(values['_id'])
     result = delResult(values)
     return JSONEncoder().encode(result)
     return json.dumps(result)

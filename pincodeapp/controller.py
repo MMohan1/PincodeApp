@@ -1,68 +1,93 @@
-from flask import Flask, render_template, jsonify
-from flask import request
-from celery_mail import make_celery
-from pymongo import MongoClient
 import csv
-mongo_client = MongoClient()
-db = mongo_client.pincode
-flask_app = Flask(__name__)
-flask_app.config['CELERY_BROKER_URL'] = 'amqp://mms:mms@localhost:5672/mmshost'
-#use this while you run this program comment the pervious line and uncomment next line
-#flask_app.config['CELERY_BROKER_URL'] = 'amqp://guest:guest@localhost:5672//'
-flask_app.config['CELERY_TIMEZONE'] = 'Asia/Kolkata'
-flask_app.config['CELERY_ENABLE_UTC'] = True
-flask_app.config['CELERY_ACCEPT_CONTENT'] = ['json']
-flask_app.config['CELERY_TASK_SERIALIZER'] = 'json'
-flask_app.config['CELERY_RESULT_SERIALIZER'] = 'json'
-flask_app.config['CELERY_RESULT_BACKEND'] = 'mongodb://127.0.0.1:27017/'
-flask_app.config['CELERY_MONGODB_BACKEND_SETTINGS'] = {
-    'database': 'mydb',
-    'taskmeta_collection': 'my_taskmeta_collection',
-}
-celery = make_celery(flask_app)
+import os
+import pandas as pd
+data = pd.read_csv('all_india_pin_code.csv')
 
 
-@celery.task(serializer='json', name='save-csv-file')
-def insertCsvtoMongo():
-    if 'India_details' not in db.collection_names():
-        with open('all_india_pin_code.csv') as f:
-            records = csv.DictReader(f)
-            db.India_details.insert(records)
-            return
-    else:
-        return
-
-@celery.task(serializer='json', name='get_result_from_mongo')
 def sendResult(parms):
-    query = {}
-    out_put = []
-    if parms:
-        for key,val in parms.iteritems():
-            if val:
-                query[key] = val
-    record = db.India_details.find(query)
-    for rec in record:
-        rec['_id'] = str(rec['_id'])
-        out_put.append(rec)
-    return out_put
-
+    data = pd.read_csv('all_india_pin_code.csv')
+    for key,value in parms.iteritems():
+        if key == 'pincode' and value:
+            data = data[data.pincode == int(value)]
+            continue
+        if key == 'statename' and value:
+            data = data[data.statename == value]
+            continue
+        if key == 'Districtname' and value:
+            data = data[data.Districtname == value]
+            continue
+        if key == 'regionname' and value:
+            data = data[data.regionname == value]
+            continue
+        if key == 'officename' and value:
+            data = data[data.officename == value]
+            continue
+        if key == 'circlename' and value:
+            data = data[data.circlename == value]
+            continue
+    headers = ['_id','officename','pincode','officeType','Deliverystatus','divisionname','regionname','circlename','Taluk','Districtname','statename']
+    parsed_data= []
+    for row in data.to_records():
+        row[8] = row[5]
+        parsed_data.append(dict(zip(headers, row)))
+    return parsed_data
+          
+    
 def getIdResult(id):
-    return db.India_details.find({'_id':id})
+    data = pd.read_csv('all_india_pin_code.csv')
+    data = data.to_records()[id]
+    data[8] = data[5]
+    parsed_data= []
+    headers = ['_id','officename','pincode','officeType','Deliverystatus','divisionname','regionname','circlename','Taluk','Districtname','statename']
+    parsed_data.append(dict(zip(headers, data)))
+    return parsed_data
     
 def Addresult(parms):
-    db.India_details.insert(parms)
+    import csv
+    header = ['officename','pincode','officeType','Deliverystatus','divisionname','regionname','circlename','Taluk','Districtname','statename']
+    with open('all_india_pin_code.csv', 'a') as outcsv:
+        writer = csv.DictWriter(outcsv, fieldnames = header)
+        writer.writerow(parms)
     return True
 
 def updateresult(parms):
-    db.India_details.update({'_id': parms['_id']},{'$set': parms},upsert=False)
+    index = int(parms['_id'])
+    del parms['_id']
+    data = pd.read_csv('all_india_pin_code.csv')
+    if index > 0:
+        data.iloc[0:index].to_csv('dumy.csv',index=False)
+        header = ['officename','pincode','officeType','Deliverystatus','divisionname','regionname','circlename','Taluk','Districtname','statename']
+        with open('dumy.csv', 'a') as outcsv:
+            writer = csv.DictWriter(outcsv, fieldnames = header)
+            writer.writerow(parms)
+        data.iloc[index+1:].to_csv('dumy1.csv',index=False)
+        d = pd.read_csv('dumy.csv')
+        e= pd.read_csv('dumy1.csv')
+        full_data = pd.concat([d,e])
+        full_data.iloc[0:].to_csv('dumy.csv',index=False)
+    else:
+        data.iloc[1:].to_csv('dumy.csv',index=False)
+    os.remove('all_india_pin_code.csv')
+    os.rename('dumy.csv','all_india_pin_code.csv')    
     return True
 
 def delResult(parms):
-    db.India_details.remove({'_id': parms['_id']})
+    index = int(parms['_id'])
     del parms['_id']
-    record = sendResult.delay(parms)
-    record.wait(timeout=None)
-    return record.result
+    data = pd.read_csv('all_india_pin_code.csv')
+    if index > 0:
+        data.iloc[0:index].to_csv('dumy.csv',index=False)
+        data.iloc[index+1:].to_csv('dumy1.csv',index=False)
+        d = pd.read_csv('dumy.csv')
+        e= pd.read_csv('dumy1.csv')
+        full_data = pd.concat([d,e])
+        full_data.iloc[0:].to_csv('dumy.csv',index=False)
+    else:
+        data.iloc[1:].to_csv('dumy.csv',index=False)
+    os.remove('all_india_pin_code.csv')
+    os.rename('dumy.csv','all_india_pin_code.csv')    
+    return sendResult(parms)
+        
 
     
 if __name__ == "__main__":
