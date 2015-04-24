@@ -6,48 +6,61 @@
 </head>
 
 <body>
-<h1>Welcome To DeshBoard</h1>
+<h1>Welcome To DashBoard</h1>
 <h3>Search Results</h3>
 {% raw %}
 <div data-ng-app="myapp" data-ng-init="name=1">
-<div ng-controller="MyController" > 
-	<p>Pin Code:<input type="text" ng-model="pincode"> 
-	  State:<input type="text" ng-model="statename"></p>
-	<p>District:<input type="text" ng-model="district"> 
-	  Locality:<input type="text" ng-model="locality"></p>
-	<p>Office Name:<input type="text" ng-model="officename"> 
-	  Circle Name:<input type="text" ng-model="circlename"></p>
-<!-- </br> -->
-</p><button ng-click="myData.doClick(item, $event)">Search</button></p>
+    <div ng-controller="MyController" >
+    <table>
+	<tr>
+    <td>Pin Code:</td><td><input type="text" ng-model="pincode"> </td>
+	<td>State:</td><td><input type="text" ng-model="statename"></td></tr>
+    <tr></tr>
+	<tr><td>District:</td><td><input type="text" ng-model="district"> </td>
+	<td>Locality:</td><td><input type="text" ng-model="locality"></td></tr>
+    <tr></tr>
+	<tr><td>Office Name:</td><td><input type="text" ng-model="officename"> </td>
+	<td>Circle Name:</td><td><input type="text" ng-model="circlename"></td></tr>
+    <tr></tr>
+    <!-- </br> -->
+    <tr>
+<td></td><td><button ng-click="myData.doClick(item, $event)">Search</button></td>
+    <td></td><td><button><a href='/addData'>Add</a></button></td>
+    </tr>
+        </table>
     <br/>
      <!-- Data from server: {{myData.fromServer}} -->
     </br>
 <!-- id={{myData.fromServer.id}} -->
 <table border='1px'>
     <tr>
-        <th>Pin Code</th>
-        <th>State Name</th>
+    <th>Pin Code</th>
+    <th>State Name</th>
 	<th>Delivery Status</th>
-        <th>District Name</th>
+    <th>District Name</th>
 	<th>Region Name</th>
-        <th>Division Name</th>
+    <th>Division Name</th>
 	<th>Circle Name</th>
-        <th>Office Name</th>
+    <th>Office Name</th>
 	<th>Taluk</th>
-        <th>Office Type</th>
+    <th>Office Type</th>
+    <th>Action</th>
         
-    </tr>
+</tr>
+    
     <tr ng-repeat="myData in myData.fromServer">
-        <td>{{myData.pincode}}</td>
-        <td>{{myData.statename}}</td>
-	<td>{{myData.Deliverystatus}}</td>
-	<td>{{myData.Districtname}}</td>
-	<td>{{myData.regionname}}</td>
-	<td>{{myData.divisionname}}</td>
-	<td>{{myData.circlename}}</td>
-	<td>{{myData.officename}}</td>
-	<td>{{myData.Taluk}}</td>
-	<td>{{myData.officeType}}</td>
+      <td ng-bind="myData.pincode"></td>
+      <td>{{myData.statename}}</td>
+	  <td>{{myData.Deliverystatus}}</td>
+	  <td>{{myData.Districtname}}</td>
+	  <td>{{myData.regionname}}</td>
+	  <td>{{myData.divisionname}}</td>
+	  <td>{{myData.circlename}}</td>
+	  <td>{{myData.officename}}</td>
+	  <td>{{myData.Taluk}}</td>
+	  <td>{{myData.officeType}}</td>
+    <td><button><a href="/editData/{{myData._id}}">Edit</button></td>
+    <td><button ng-click="delData(myData._id)">Delete</button></td>
         
     </tr>
 </table>
@@ -57,20 +70,42 @@
     angular.module("myapp", [])
         .controller("MyController", function($scope, $http) {
             $scope.myData = {};
-            $scope.myData.doClick = function(item, event) {
+            $scope.delData = function(idn) {
+                var request1 = $http({
+      			    method: "post",
+                    url: "/delData",
+                    data: {
+                        _id: idn,
+                        pincode: $scope.pincode,
+                        statename: $scope.statename,
+                        Districtname: $scope.district,
+                        regionname: $scope.locality,
+                        officename: $scope.officename,
+                        circlename: $scope.circlename,
+                    }
+                });
+            request1.success(function(data, status, headers, config) {
+                    $scope.myData.fromServer = data;
+            });
 
-var request = $http({
-      			method: "post",
-                        url: "/getData",
-                        data: {
-                            pincode: $scope.pincode,
-    statename: $scope.statename,
-    district: $scope.district,
-    locality: $scope.locality,
-    officename: $scope.officename,
-    circlename: $scope.circlename,
-                        }
-                    });
+            request1.error(function(data, status, headers, config) {
+                    alert("AJAX failed!");
+                });    
+            }
+                $scope.myData.doClick = function(item, event) {
+
+                var request = $http({
+      			    method: "post",
+                    url: "/getData",
+                    data: {
+                        pincode: $scope.pincode,
+                        statename: $scope.statename,
+                        Districtname: $scope.district,
+                        regionname: $scope.locality,
+                        officename: $scope.officename,
+                        circlename: $scope.circlename,
+                    }
+                });
 
                 request.success(function(data, status, headers, config) {
                     $scope.myData.fromServer = data;

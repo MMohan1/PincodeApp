@@ -1,0 +1,66 @@
+    <!doctype html>    
+
+<title>Add Details</title>
+<div class=page>
+    <h1>Add Details</h1>
+    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+    <table>
+    {% if error %}<p class=error><strong>Error:</strong> {{ error }}
+<tr>
+    <td>Pincode:</td><td><input type=text size=30 name=pincode value={{data['pincode']}} ></td>
+    <td>State:</td><td><input type=text size=30 name=statename value={{data['statename']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+          <td>District:</td><td><input type=text size=30 name=Districtname value={{data['Districtname']}}></td>
+    <td>Taluk:</td><td><input type=text size=30 name=Taluk value={{data['Taluk']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>OfficeName:</td><td><input type=text size=30 name=officename value={{data['officename']}}></td>
+            <td>Division:</td><td><input type=text size=30 name=divisionname value={{data['divisionname']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>CircleName:</td><td><input type=text size=30 name=circlename value={{data['circlename']}}></td>
+    <td>Deliverystatus:</td><td><input type=text size=30 name=Deliverystatus value={{data['Deliverystatus']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>OfficeType:</td><td><input type=text size=30 name=officeType value={{data['officeType']}}></td>
+    <td>Region Name:</td><td><input type=text size=30 name=regionname value={{data['regionname']}}></td>
+    </tr>
+{% else %}
+    <tr>
+        <td>Pincode:</td><td><input type=text size=30 name=pincode value='' ></td>
+    <td>State:</td><td><input type=text size=30 name=statename value=''></td>
+    </tr>
+    <tr></tr>
+    <tr>
+          <td>District:</td><td><input type=text size=30 name=Districtname value=''></td>
+    <td>Taluk:</td><td><input type=text size=30 name=Taluk value=''></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>OfficeName:</td><td><input type=text size=30 name=officename value=''></td>
+            <td>Division:</td><td><input type=text size=30 name=divisionname value=''></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>CircleName:</td><td><input type=text size=30 name=circlename value=''></td>
+    <td>Deliverystatus:</td><td><input type=text size=30 name=Deliverystatus value=''></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>OfficeType:</td><td><input type=text size=30 name=officeType value=''></td>
+    <td>Region Name:</td><td><input type=text size=30 name=regionname value=''></td>
+    </tr>
+    {% endif %}
+    <tr></tr>
+    <tr>
+    <td></td><td><input type=submit  size=30 value=Add></td>     <td></td>  <td><a href="{{ url_for('home') }}">Home</a></td>
+    </tr>
+    </table>
+    </form>
+</div>
+</html>

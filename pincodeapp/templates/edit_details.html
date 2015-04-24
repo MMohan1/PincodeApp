@@ -1,0 +1,68 @@
+<!doctype html>
+<title>Edit Details</title>
+<div class=page>
+  <h1>Edit Details</h1>
+  <form action="{{ url_for('update_entry') }}" method=post class=add-entry>
+    <table>
+      {% if error %}<p class=error><strong>Error:</strong> {{ error }}
+        <input type="hidden" name="_id" value= {{result['_id']}}>
+
+<tr>
+    <td>Pincode:</td><td><input type=text size=30 name=pincode value={{result['pincode']}} ></td>
+    <td>State:</td><td><input type=text size=30 name=statename value={{result['statename']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+          <td>District:</td><td><input type=text size=30 name=Districtname value={{result['Districtname']}}></td>
+    <td>Taluk:</td><td><input type=text size=30 name=Taluk value={{result['Taluk']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>OfficeName:</td><td><input type=text size=30 name=officename value={{result['officename']}}></td>
+            <td>Division:</td><td><input type=text size=30 name=divisionname value={{result['divisionname']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>CircleName:</td><td><input type=text size=30 name=circlename value={{result['circlename']}}></td>
+    <td>Deliverystatus:</td><td><input type=text size=30 name=Deliverystatus value={{result['Deliverystatus']}}></td>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>OfficeType:</td><td><input type=text size=30 name=officeType value={{result['officeType']}}></td>
+    <td>Region Name:</td><td><input type=text size=30 name=regionname value={{result['regionname']}}></td>
+    </tr>
+    {% else %}
+        <input type="hidden" name="_id" value= {{result[0]['_id']}}>
+        <tr>
+        <td>
+        Pincode:</td><td><input type=text size=30 name=pincode value={{result[0]['pincode']}} ></td>
+        <td>State:</td><td><input type=text size=30 name=statename value={{result[0]['statename']}}></td>
+        </tr>
+        </tr><tr> </tr><tr>
+        <tr>
+          <td>District:</td><td><input type=text size=30 name=Districtname value={{result[0]['Districtname']}}></td>
+        <td>Taluk:</td><td><input type=text size=30 name=Taluk value={{result[0]['Taluk']}}></td>
+        </tr>
+        </tr><tr> </tr><tr>
+          <tr>
+           <td> OfficeName:</td><td><input type=text size=30 name=officename value={{result[0]['officename']}}></td>
+            <td>Division:</td><td><input type=text size=30 name=divisionname value={{result[0]['divisionname']}}></td>
+          </tr>
+          </tr><tr> </tr><tr>
+          <tr>
+            <td>CircleName:</td><td><input type=text size=30 name=circlename value={{result[0]['statename']}}></td>
+           <td>Deliverystatus:</td><td><input type=text size=30 name=Deliverystatus value={{result[0]['Deliverystatus']}}></td>
+          </tr>
+          </tr><tr> </tr><tr>
+            <tr>
+             <td> Office Type:</td><td><input type=text size=30 name=officeType value={{result[0]['officeType']}}></td>
+             <td>Region Name :</td><td><input type=text size=30 name=regionname value={{result[0]['regionname']}}></td>
+            </tr>
+            {% endif %}
+            </tr><tr> </tr><tr>
+            <tr>
+             <td></td> <td><input type=submit  size=30 value=Update></td>  <td></td>  <td><a href="{{ url_for('home') }}">Home</a></td>
+            </tr>
+      </table>
+    </form>
+</div>
