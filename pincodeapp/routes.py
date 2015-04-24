@@ -1,18 +1,8 @@
 from flask import Flask, render_template
 from flask import request
 from controller import sendResult, Addresult,updateresult,delResult,getIdResult
-import json
 app = Flask(__name__)
 import ujson
-from bson.objectid import ObjectId  
-
-
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, ObjectId):
-            return str(o)
-        return json.JSONEncoder.default(self, o)
-
 
 
 @app.route('/')
@@ -23,7 +13,7 @@ def home():
 @app.route('/getData', methods=['GET', 'POST'])
 def getDataFromMongo():
     print 'in function'
-    values = json.loads(request.data)
+    values = ujson.loads(request.data)
     record = sendResult(values)
     return ujson.dumps(record)
 
@@ -77,10 +67,9 @@ def update_entry():
 @app.route('/delData', methods=['GET', 'POST'])
 def delDataFromMongo():
     print 'in function'
-    values = json.loads(request.data)
+    values = ujson.loads(request.data)
     result = delResult(values)
-    return JSONEncoder().encode(result)
-    return json.dumps(result)
+    return ujson.dumps(result)
 
 if __name__ == '__main__':
     app.run(port=3125, debug=True)

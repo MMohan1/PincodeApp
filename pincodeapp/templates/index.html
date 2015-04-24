@@ -107,9 +107,12 @@
                     }
                 });
 
-                request.success(function(data, status, headers, config) {
+                    request.success(function(data, status, headers, config) {
+                        if (data == 0)
+                            alert("Please Check the Query No Result Found")
                     $scope.myData.fromServer = data;
                 });
+                    
                 request.error(function(data, status, headers, config) {
                     alert("AJAX failed!");
                 });
